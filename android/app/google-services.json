@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "999150343894",
+    "project_id": "undoubt-eaa54",
+    "storage_bucket": "undoubt-eaa54.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999150343894:android:5429d7c12bc25fa13a1b77",
+        "android_client_info": {
+          "package_name": "com.example.Undoubt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "999150343894-9jfv5mtot9t8tqm5im9epvj5jcibi6sq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_9lBWOzn0CHwojOGkLzC7DGL3JkPP0vU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "999150343894-9jfv5mtot9t8tqm5im9epvj5jcibi6sq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
