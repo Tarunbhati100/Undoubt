@@ -1,4 +1,4 @@
-import 'package:Undoubt/Screens/Admin/AdminScreen/components/background.dart';
+import 'package:Undoubt/Screens/Admin/components/background.dart';
 import 'package:Undoubt/Screens/Answer_Screen.dart';
 import 'package:Undoubt/Services/database.dart';
 import 'package:Undoubt/constants.dart';

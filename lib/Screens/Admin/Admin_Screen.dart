@@ -1,3 +1,4 @@
+import 'package:Undoubt/Screens/Admin/components/drawer.dart';
 import 'package:Undoubt/Screens/Answer_Screen.dart';
 import 'package:Undoubt/Screens/Admin/components/background.dart';
 import 'package:Undoubt/Screens/Welcome/welcome_screen.dart';
@@ -17,19 +18,9 @@ class AdminScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Admin Section"),
         centerTitle: true,
-        actions: [
-          IconButton(
-              icon: Icon(
-                Icons.logout,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.of(context)
-                    .pushReplacement(MaterialPageRoute(builder: (context) {
-                  return WelcomeScreen();
-                }));
-              })
-        ],
+      ),
+      drawer: AdminDrawer(
+        admin: admin,
       ),
       body: SafeArea(
           child: Background(
