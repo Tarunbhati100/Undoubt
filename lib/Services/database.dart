@@ -2,6 +2,7 @@ import 'package:Undoubt/models/Client.dart';
 import 'package:Undoubt/models/Query.dart' as querymodel;
 import 'package:Undoubt/models/admin.dart';
 import 'package:Undoubt/models/answer.dart';
+import 'package:Undoubt/models/rating.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseServices {
@@ -11,7 +12,8 @@ class DatabaseServices {
       FirebaseFirestore.instance.collection('clients');
   final CollectionReference answerCollection =
       FirebaseFirestore.instance.collection('answers');
-
+  final CollectionReference ratingCollection =
+      FirebaseFirestore.instance.collection('ratings');
   Future<List<Map<String, dynamic>>> get getdata async {
     final doc = await adminsCollection.get();
     return doc.docs.map((e) => e.data()).toList();
@@ -20,11 +22,11 @@ class DatabaseServices {
   Future<Admin> validateAdmin(String id, String password) async {
     var admin;
     await adminsCollection.get().then((doc) => doc.docs.forEach((element) {
-          if (element.data()['id'] == id) {
-            if (element.data()['password'] == password) {
+          if (element.data()['Id'] == id) {
+            if (element.data()['Password'] == password) {
               admin = Admin(
                 id: id,
-                type: element.data()['type'],
+                type: element.data()['AdminType'],
               );
             }
           }
@@ -42,6 +44,21 @@ class DatabaseServices {
 
   Future addUserProfile({Client client, String uid}) async {
     await clientsCollection.doc(uid).set(client.tomap);
+  }
+
+  Future addAdminProfile(
+      {String adminId, String adminType, String password}) async {
+    await adminsCollection.add({
+      "Id": adminId,
+      "AdminType": adminType,
+      "Password": password,
+    });
+  }
+
+  Future addrating({String uid, String adminid, double rating}) async {
+    await ratingCollection
+        .doc(uid + adminid)
+        .set({"AdminId": adminid, "Rating": rating});
   }
 
   Future<Client> getUserProfile(String uid) async {
@@ -90,10 +107,11 @@ class DatabaseServices {
   List<Answer> _answerListFromSnapshots(QuerySnapshot snapshot, String id) {
     return snapshot.docs.map((doc) {
       return Answer(
-          id: doc.data()['Id'] ?? "",
-          answer: doc.data()['Answer'] ?? "",
-          admin: doc.data()['AnsweredBy'] ?? "",
-          admintype: doc.data()['AdminType'] ?? "");
+        id: doc.data()['Id'] ?? "",
+        answer: doc.data()['Answer'] ?? "",
+        admin: doc.data()['AnsweredBy'] ?? "",
+        admintype: doc.data()['AdminType'] ?? "",
+      );
     }).toList();
   }
 
@@ -111,5 +129,31 @@ class DatabaseServices {
       address: doc.data()['Adress'],
       number: doc.data()['Number'],
     );
+  }
+
+  Future<List<Admin>> get admins async {
+    final docs = await adminsCollection.get();
+    return docs.docs.map((doc) {
+      return Admin(
+        id: doc.data()['Id'],
+        type: doc.data()['AdminType'],
+      );
+    }).toList();
+  }
+
+  Future<List<Rating>> get ratings async {
+    final docs = await ratingCollection.get();
+    return docs.docs.map((doc) {
+      return Rating(
+        id: doc.id,
+        admin: doc.data()['AdminId'],
+        rating: doc.data()['Rating'],
+      );
+    }).toList();
+  }
+
+  Future<double> rating(String uid) async {
+    final docs = await ratingCollection.doc(uid).get();
+    return docs.data()['Rating'];
   }
 }

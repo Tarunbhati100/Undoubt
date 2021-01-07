@@ -4,15 +4,34 @@ import 'package:Undoubt/constants.dart';
 import 'package:Undoubt/models/Query.dart';
 import 'package:Undoubt/models/admin.dart';
 import 'package:Undoubt/models/answer.dart';
+import 'package:Undoubt/models/rating.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class AnswerScreen extends StatelessWidget {
+class AnswerScreen extends StatefulWidget {
   Admin admin;
   Query query;
   AnswerScreen({this.admin, this.query});
+
+  @override
+  _AnswerScreenState createState() => _AnswerScreenState();
+}
+
+class _AnswerScreenState extends State<AnswerScreen> {
   final _database = DatabaseServices();
+
   String answer;
+
+  double rating;
+
+  List<Rating> ratings = [];
+  @override
+  void initState() {
+    initialize();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +39,7 @@ class AnswerScreen extends StatelessWidget {
         title: Text("Answers"),
         centerTitle: true,
       ),
-      floatingActionButton: admin != null
+      floatingActionButton: widget.admin != null
           ? GestureDetector(
               child: Container(
                   padding: const EdgeInsets.all(10),
@@ -67,7 +86,7 @@ class AnswerScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Question :- ${query.question}",
+                      "Question :- ${widget.query.question}",
                       style: TextStyle(
                         color: kPrimaryColor,
                         fontWeight: FontWeight.bold,
@@ -79,7 +98,7 @@ class AnswerScreen extends StatelessWidget {
                       thickness: 0.51,
                     ),
                     Text(
-                      "Description :- ${query.description}",
+                      "Description :- ${widget.query.description}",
                       style: TextStyle(
                         fontSize: 15,
                         color: kPrimaryColor,
@@ -92,7 +111,7 @@ class AnswerScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(5.0),
                   child: FittedBox(
                     child: Text(
-                      "(Posted by :- ${query.client})",
+                      "(Posted by :- ${widget.query.client})",
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -114,7 +133,7 @@ class AnswerScreen extends StatelessWidget {
           ),
           SingleChildScrollView(
             child: StreamBuilder<List<Answer>>(
-              stream: DatabaseServices().answers(query.id),
+              stream: DatabaseServices().answers(widget.query.id),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Column(
@@ -124,46 +143,104 @@ class AnswerScreen extends StatelessWidget {
                           children:
                               List.generate(snapshot.data.length, (index) {
                         var element = snapshot.data[index];
-                        return (element.id == query.id)
-                            ? Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
-                                padding: EdgeInsets.all(10),
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                  border: Border.all(color: kPrimaryColor),
-                                  color: kPrimaryLightColor,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      width: double.infinity,
-                                      child: Text(
-                                        element.answer,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: kPrimaryColor,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: FittedBox(
+                        return (element.id == widget.query.id)
+                            ? GestureDetector(
+                                onTap: () {
+                                  if (widget.admin == null) {
+                                    showDialog<void>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Give Rating'),
+                                          content: FittedBox(
+                                            child: RatingBar.builder(
+                                              initialRating: 3,
+                                              direction: Axis.horizontal,
+                                              allowHalfRating: true,
+                                              itemCount: 5,
+                                              itemPadding: EdgeInsets.symmetric(
+                                                  horizontal: 4.0),
+                                              itemBuilder: (context, _) => Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                              ),
+                                              onRatingUpdate: (val) {
+                                                rating = val;
+                                              },
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text('Submit'),
+                                              onPressed: () async {
+                                                print(rating);
+                                                await _database.addrating(
+                                                    uid: element.id,
+                                                    adminid: element.admin,
+                                                    rating: rating);
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  padding: EdgeInsets.all(10),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
+                                    border: Border.all(color: kPrimaryColor),
+                                    color: kPrimaryLightColor,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        width: double.infinity,
                                         child: Text(
-                                          "Answered By :- ${element.admin}(${element.admintype})",
+                                          element.answer,
                                           style: TextStyle(
                                             fontSize: 15,
-                                            color: Colors.black,
+                                            color: kPrimaryColor,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: FittedBox(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                "Answered By :- ${element.admin}(${element.admintype})",
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              Text(
+                                                "Rating :- ${getrating(widget.query.id + element.admin) ?? "Unrated"}",
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               )
                             : Container();
@@ -224,9 +301,9 @@ class AnswerScreen extends StatelessWidget {
                   onPressed: () async {
                     if (answer != "" && answer != null && answer.isNotEmpty) {
                       await _database.addAnswer(Answer(
-                          id: query.id,
-                          admin: admin.id,
-                          admintype: admin.type,
+                          id: widget.query.id,
+                          admin: widget.admin.id,
+                          admintype: widget.admin.type,
                           answer: answer));
                     }
                     Navigator.pop(context);
@@ -250,5 +327,22 @@ class AnswerScreen extends StatelessWidget {
             ),
           );
         });
+  }
+
+  initialize() async {
+    final ratingsdata = await _database.ratings;
+    setState(() {
+      ratings = ratingsdata;
+    });
+  }
+
+  double getrating(String id) {
+    double rating;
+    ratings.forEach((element) {
+      if (element.id == id) {
+        rating = element.rating;
+      }
+    });
+    return rating;
   }
 }

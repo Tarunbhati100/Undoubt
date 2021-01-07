@@ -108,6 +108,7 @@ class _BodyState extends State<Body> {
                         if (val.length < 6) {
                           return "Password must have atleast 6 characters !";
                         }
+                        return null;
                       },
                     ),
                     RoundedButton(

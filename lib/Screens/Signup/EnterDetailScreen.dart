@@ -47,6 +47,7 @@ class EnterDetailScreen extends StatelessWidget {
                           if (val.isEmpty) {
                             return "Must not be empty !";
                           }
+                          return null;
                         },
                       ),
                       RoundedInputField(
@@ -60,6 +61,7 @@ class EnterDetailScreen extends StatelessWidget {
                           if (val.isEmpty) {
                             return "Must not be empty !";
                           }
+                          return null;
                         },
                       ),
                       RoundedInputField(
@@ -73,6 +75,7 @@ class EnterDetailScreen extends StatelessWidget {
                           if (val.isEmpty) {
                             return "Must not be empty !";
                           }
+                          return null;
                         },
                       ),
                       RoundedInputField(
@@ -85,6 +88,7 @@ class EnterDetailScreen extends StatelessWidget {
                           if (val.isEmpty) {
                             return "Must not be empty !";
                           }
+                          return null;
                         },
                       ),
                       RoundedButton(

@@ -1,3 +1,5 @@
+import 'package:Undoubt/Screens/Admin/Create_Admin.dart';
+import 'package:Undoubt/Screens/Admin/Statistics.dart';
 import 'package:Undoubt/Screens/Welcome/welcome_screen.dart';
 import 'package:Undoubt/constants.dart';
 import 'package:Undoubt/models/admin.dart';
@@ -38,7 +40,11 @@ class AdminDrawer extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return CreateAdmin();
+              }));
+            },
           ),
           ListTile(
             leading: Icon(
@@ -52,7 +58,11 @@ class AdminDrawer extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return Statistics();
+              }));
+            },
           ),
           ListTile(
             leading: Icon(

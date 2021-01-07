@@ -19,16 +19,6 @@ class Body extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Your Queries :- ",
-                  style: TextStyle(
-                      fontSize: 30,
-                      color: kPrimaryColor,
-                      decoration: TextDecoration.underline),
-                ),
-              ),
               Column(
                   children: List.generate(snapshot.data.length, (index) {
                 var element = snapshot.data[index];

@@ -1,4 +1,3 @@
-import 'package:Undoubt/Screens/Client/Client_Screen.dart';
 import 'package:Undoubt/Screens/Login/components/background.dart';
 import 'package:Undoubt/Screens/Login/login_screen.dart';
 import 'package:Undoubt/Screens/Signup/EnterDetailScreen.dart';
@@ -21,8 +20,6 @@ class _BodyState extends State<Body> {
   String email;
 
   String password;
-
-  String confirmPassword;
 
   bool _showPassword = true;
 
@@ -77,14 +74,12 @@ class _BodyState extends State<Body> {
                         if (val.length < 6) {
                           return "Password must have atleast 6 characters !";
                         }
+                        return null;
                       },
                     ),
                     RoundedPasswordField(
                       title: "Confirm Password",
                       show: _showConfirmPassword,
-                      onChanged: (val) {
-                        confirmPassword = val;
-                      },
                       toggle: () {
                         setState(() {
                           _showConfirmPassword = !_showConfirmPassword;
@@ -92,6 +87,7 @@ class _BodyState extends State<Body> {
                       },
                       validator: (val) {
                         if (val != password) return "Passwords don't match !";
+                        return null;
                       },
                     ),
                     RoundedButton(

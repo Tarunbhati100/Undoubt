@@ -1,7 +1,6 @@
 import 'package:Undoubt/Screens/Admin/components/drawer.dart';
 import 'package:Undoubt/Screens/Answer_Screen.dart';
 import 'package:Undoubt/Screens/Admin/components/background.dart';
-import 'package:Undoubt/Screens/Welcome/welcome_screen.dart';
 import 'package:Undoubt/Services/database.dart';
 import 'package:Undoubt/constants.dart';
 import 'package:Undoubt/models/Query.dart';
@@ -33,88 +32,73 @@ class AdminScreen extends StatelessWidget {
                   child: SvgPicture.asset("assets/images/doubt.svg"));
             } else {
               return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Queries :- ",
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: kPrimaryColor,
-                      ),
+                  children: List.generate(snapshot.data.length, (index) {
+                var element = snapshot.data[index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return AnswerScreen(
+                        admin: admin,
+                        query: element,
+                      );
+                    }));
+                  },
+                  child: Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      border: Border.all(color: kPrimaryColor),
+                      color: kPrimaryLightColor,
                     ),
-                  ),
-                  Column(
-                      children: List.generate(snapshot.data.length, (index) {
-                    var element = snapshot.data[index];
-                    return InkWell(
-                      onTap: () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) {
-                          return AnswerScreen(
-                            admin: admin,
-                            query: element,
-                          );
-                        }));
-                      },
-                      child: Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          border: Border.all(color: kPrimaryColor),
-                          color: kPrimaryLightColor,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "Question :- ${element.question}",
-                                  style: TextStyle(
-                                    color: kPrimaryColor,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.5,
-                                  ),
-                                ),
-                                Divider(
-                                  color: Colors.black,
-                                  thickness: 0.51,
-                                ),
-                                Text(
-                                  "Description :- ${element.description}",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: kPrimaryColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "Question :- ${element.question}",
+                              style: TextStyle(
+                                color: kPrimaryColor,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                              ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: FittedBox(
-                                child: Text(
-                                  "(Posted by :- ${element.client})",
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.5,
-                                  ),
-                                ),
+                            Divider(
+                              color: Colors.black,
+                              thickness: 0.51,
+                            ),
+                            Text(
+                              "Description :- ${element.description}",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: kPrimaryColor,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    );
-                  })),
-                ],
-              );
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: FittedBox(
+                            child: Text(
+                              "(Posted by :- ${element.client})",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }));
             }
           },
         ),
