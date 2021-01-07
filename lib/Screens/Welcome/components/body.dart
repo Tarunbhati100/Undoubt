@@ -1,3 +1,4 @@
+import 'package:Undoubt/Screens/Client/Client_Screen.dart';
 import 'package:Undoubt/Screens/Login/login_screen.dart';
 import 'package:Undoubt/Screens/Login/PhoneLogin/phone_Login.dart';
 import 'package:Undoubt/Screens/Signup/EnterDetailScreen.dart';
@@ -6,6 +7,7 @@ import 'package:Undoubt/Screens/Welcome/components/background.dart';
 import 'package:Undoubt/Screens/Welcome/components/or_divider.dart';
 import 'package:Undoubt/Screens/Welcome/components/social_icon.dart';
 import 'package:Undoubt/Services/auth.dart';
+import 'package:Undoubt/Services/database.dart';
 import 'package:Undoubt/components/rounded_button.dart';
 import 'package:Undoubt/constants.dart';
 import 'package:flushbar/flushbar.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class Body extends StatelessWidget {
   final _auth = AuthServices();
+  final _database = DatabaseServices();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -69,12 +72,20 @@ class Body extends StatelessWidget {
                   iconSrc: "assets/icons/google-plus.svg",
                   press: () async {
                     try {
-                      final newUser = await _auth.signInWithGoogle();
-                      if (newUser != null) {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (context) {
-                          return EnterDetailScreen();
-                        }), (route) => false);
+                      final user = await _auth.signInWithGoogle();
+                      if (user != null) {
+                        final client = await _database.clientData(user.uid);
+                        if (client == null) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) {
+                            return EnterDetailScreen();
+                          }), (route) => false);
+                        } else {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) {
+                            return ClientScreen(client : client);
+                          }), (route) => false);
+                        }
                       }
                     } catch (e) {
                       Flushbar(

@@ -71,12 +71,14 @@ class _add_DoubtState extends State<add_Doubt> {
               textColor: Colors.white,
               onPressed: () async {
                 final user = _auth.getCurrentUser();
+                final client = await _database.clientData(user.uid);
                 await _database.addQuery(
                     Query(
-                        id: user.uid,
                         question: question,
                         description: description,
-                        client: user.email),user.uid);
+                        client: user.email??client.emailid),
+                    user.uid);
+                    Navigator.pop(context);
               },
               child: FittedBox(
                 child: Row(

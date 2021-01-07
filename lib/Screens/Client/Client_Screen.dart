@@ -1,5 +1,6 @@
 import 'package:Undoubt/Screens/Client/components/add_Doubt.dart';
 import 'package:Undoubt/Screens/Client/components/body.dart';
+import 'package:Undoubt/Screens/Signup/EnterDetailScreen.dart';
 import 'package:Undoubt/Screens/Welcome/welcome_screen.dart';
 import 'package:Undoubt/Services/auth.dart';
 import 'package:Undoubt/Services/database.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/material.dart';
 class ClientScreen extends StatelessWidget {
   final _database = DatabaseServices();
   final _auth = AuthServices();
+  Client client;
+  ClientScreen({this.client});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,8 +20,9 @@ class ClientScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.account_circle),
           onPressed: () async {
-            final client =
-                await _database.clientData(_auth.getCurrentUser().uid);
+            if (client == null) {
+              client = await _database.clientData(_auth.getCurrentUser().uid);
+            }
             showProfile(context, client);
           },
         ),
@@ -90,44 +94,81 @@ class ClientScreen extends StatelessWidget {
         )),
         context: context,
         builder: (_) {
-          return Container(
-            child: Column(
-              children: [
-                Text(
-                  "Name :- ${client.name}",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.w600,
-                  ),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              IconButton(
+                  icon: Icon(Icons.edit, color: kPrimaryColor),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return EnterDetailScreen();
+                    }));
+                  }),
+              Container(
+                padding: const EdgeInsets.all(10),
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Card(
+                      icon: Icon(
+                        Icons.account_circle,
+                        color: kPrimaryColor,
+                      ),
+                      title: "Name : ${client.name}",
+                    ),
+                    Card(
+                      icon: Icon(
+                        Icons.email,
+                        color: kPrimaryColor,
+                      ),
+                      title: "Email Id :- ${client.emailid}",
+                    ),
+                    Card(
+                      icon: Icon(
+                        Icons.phone,
+                        color: kPrimaryColor,
+                      ),
+                      title: "Mobile Number :- ${client.number}",
+                    ),
+                    Card(
+                      icon: Icon(
+                        Icons.location_city,
+                        color: kPrimaryColor,
+                      ),
+                      title: "Address :- ${client.address}",
+                    ),
+                  ],
                 ),
-                Text(
-                  "Email Id :- ${client.emailid}",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  "Mobile Number :- ${client.number}",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  "Address :- ${client.address}",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           );
         });
+  }
+}
+
+class Card extends StatelessWidget {
+  Icon icon;
+  String title;
+  Card({
+    this.icon,
+    this.title,
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: icon,
+      title: Text(
+        title,
+        style: TextStyle(
+          color: kPrimaryColor,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
   }
 }

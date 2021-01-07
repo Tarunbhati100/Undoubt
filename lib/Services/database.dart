@@ -2,7 +2,6 @@ import 'package:Undoubt/models/Client.dart';
 import 'package:Undoubt/models/Query.dart' as querymodel;
 import 'package:Undoubt/models/admin.dart';
 import 'package:Undoubt/models/answer.dart';
-import 'package:Undoubt/models/rating.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseServices {
@@ -12,12 +11,6 @@ class DatabaseServices {
       FirebaseFirestore.instance.collection('clients');
   final CollectionReference answerCollection =
       FirebaseFirestore.instance.collection('answers');
-  final CollectionReference ratingCollection =
-      FirebaseFirestore.instance.collection('ratings');
-  Future<List<Map<String, dynamic>>> get getdata async {
-    final doc = await adminsCollection.get();
-    return doc.docs.map((e) => e.data()).toList();
-  }
 
   Future<Admin> validateAdmin(String id, String password) async {
     var admin;
@@ -55,10 +48,10 @@ class DatabaseServices {
     });
   }
 
-  Future addrating({String uid, String adminid, double rating}) async {
-    await ratingCollection
-        .doc(uid + adminid)
-        .set({"AdminId": adminid, "Rating": rating});
+  Future addrating({String answerid, String adminid, double rating}) async {
+    await answerCollection
+        .doc(answerid)
+        .set({"Rating": rating}, SetOptions(merge: true));
   }
 
   Future<Client> getUserProfile(String uid) async {
@@ -74,7 +67,7 @@ class DatabaseServices {
   List<querymodel.Query> _clientqueryListFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       return querymodel.Query(
-          id: doc.data()['Id'] ?? "",
+          questionid: doc.id ?? "",
           client: doc.data()['postedby'] ?? "",
           question: doc.data()['Question'] ?? "",
           description: doc.data()['Description'] ?? "");
@@ -90,7 +83,7 @@ class DatabaseServices {
   List<querymodel.Query> _adminqueryListFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       return querymodel.Query(
-        id: doc.data()['Id'] ?? "",
+        questionid: doc.id ?? "",
         client: doc.data()['postedby'] ?? "",
         question: doc.data()['Question'] ?? "",
         description: doc.data()['Description'] ?? "",
@@ -104,21 +97,21 @@ class DatabaseServices {
     return allquestionCollection.snapshots().map(_adminqueryListFromSnapshots);
   }
 
-  List<Answer> _answerListFromSnapshots(QuerySnapshot snapshot, String id) {
+  List<Answer> _answerListFromSnapshots(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       return Answer(
-        id: doc.data()['Id'] ?? "",
+        questionid: doc.data()['QuestionId'] ?? "",
+        answerid: doc.id,
         answer: doc.data()['Answer'] ?? "",
         admin: doc.data()['AnsweredBy'] ?? "",
         admintype: doc.data()['AdminType'] ?? "",
+        rating: doc.data()['Rating'],
       );
     }).toList();
   }
 
-  Stream<List<Answer>> answers(String id) {
-    return answerCollection.snapshots().map((snapshot) {
-      return _answerListFromSnapshots(snapshot, id);
-    });
+  Stream<List<Answer>> get answers {
+    return answerCollection.snapshots().map(_answerListFromSnapshots);
   }
 
   Future<Client> clientData(String uid) async {
@@ -126,7 +119,7 @@ class DatabaseServices {
     return Client(
       name: doc.data()['Name'],
       emailid: doc.data()['EmailId'],
-      address: doc.data()['Adress'],
+      address: doc.data()['Address'],
       number: doc.data()['Number'],
     );
   }
@@ -141,19 +134,17 @@ class DatabaseServices {
     }).toList();
   }
 
-  Future<List<Rating>> get ratings async {
-    final docs = await ratingCollection.get();
+  Future<List<Answer>> get answerslist async {
+    final docs = await answerCollection.get();
     return docs.docs.map((doc) {
-      return Rating(
-        id: doc.id,
-        admin: doc.data()['AdminId'],
+      return Answer(
+        questionid: doc.data()['QuestionId'] ?? "",
+        answerid: doc.id,
+        answer: doc.data()['Answer'] ?? "",
+        admin: doc.data()['AnsweredBy'] ?? "",
+        admintype: doc.data()['AdminType'] ?? "",
         rating: doc.data()['Rating'],
       );
     }).toList();
-  }
-
-  Future<double> rating(String uid) async {
-    final docs = await ratingCollection.doc(uid).get();
-    return docs.data()['Rating'];
   }
 }

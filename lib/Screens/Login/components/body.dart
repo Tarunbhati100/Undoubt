@@ -131,7 +131,7 @@ class _BodyState extends State<Body> {
                             } else if (logintype == LoginType.admin) {
                               final admin = await DatabaseServices()
                                   .validateAdmin(adminid, password);
-                              if (admin!=null) {
+                              if (admin != null) {
                                 Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(builder: (context) {
                                   return AdminScreen(admin: admin);
@@ -143,7 +143,9 @@ class _BodyState extends State<Body> {
                               icon:
                                   Icon(Icons.error_outline, color: Colors.red),
                               flushbarPosition: FlushbarPosition.TOP,
-                              message: e.toString(),
+                              message: logintype == LoginType.admin
+                                  ? e.toString()
+                                  : e.message,
                               duration: Duration(seconds: 3),
                             ).show(context);
                           } finally {

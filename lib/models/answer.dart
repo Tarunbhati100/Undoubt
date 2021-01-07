@@ -1,13 +1,22 @@
 class Answer {
-  final String id;
+  final String questionid;
+  final String answerid;
   final String answer;
   final String admin;
   final String admintype;
-  Answer({this.id, this.answer, this.admin, this.admintype});
+  final double rating;
+  Answer({
+    this.questionid,
+    this.answerid,
+    this.answer,
+    this.admin,
+    this.admintype,
+    this.rating,
+  });
 
   Map<String, String> get tomap {
     return {
-      'Id': id,
+      'QuestionId': questionid,
       'Answer': answer,
       'AnsweredBy': admin,
       'AdminType': admintype,

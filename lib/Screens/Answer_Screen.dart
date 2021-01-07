@@ -4,7 +4,6 @@ import 'package:Undoubt/constants.dart';
 import 'package:Undoubt/models/Query.dart';
 import 'package:Undoubt/models/admin.dart';
 import 'package:Undoubt/models/answer.dart';
-import 'package:Undoubt/models/rating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -23,14 +22,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
 
   String answer;
 
-  double rating;
-
-  List<Rating> ratings = [];
-  @override
-  void initState() {
-    initialize();
-    super.initState();
-  }
+  double rating = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +103,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
                   padding: const EdgeInsets.all(5.0),
                   child: FittedBox(
                     child: Text(
-                      "(Posted by :- ${widget.query.client})",
+                      "Posted by :- ${widget.query.client}",
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -133,7 +125,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
           ),
           SingleChildScrollView(
             child: StreamBuilder<List<Answer>>(
-              stream: DatabaseServices().answers(widget.query.id),
+              stream: DatabaseServices().answers,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Column(
@@ -143,7 +135,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
                           children:
                               List.generate(snapshot.data.length, (index) {
                         var element = snapshot.data[index];
-                        return (element.id == widget.query.id)
+                        return (element.questionid == widget.query.questionid)
                             ? GestureDetector(
                                 onTap: () {
                                   if (widget.admin == null) {
@@ -175,7 +167,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
                                               onPressed: () async {
                                                 print(rating);
                                                 await _database.addrating(
-                                                    uid: element.id,
+                                                    answerid: element.answerid,
                                                     adminid: element.admin,
                                                     rating: rating);
                                                 Navigator.of(context).pop();
@@ -227,14 +219,17 @@ class _AnswerScreenState extends State<AnswerScreen> {
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
-                                              Text(
-                                                "Rating :- ${getrating(widget.query.id + element.admin) ?? "Unrated"}",
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
+                                              element.rating != null
+                                                  ? Text(
+                                                      "Rating :- ${element.rating}/5",
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                    )
+                                                  : SizedBox(),
                                             ],
                                           ),
                                         ),
@@ -248,7 +243,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
                     ],
                   );
                 } else {
-                  return SvgPicture.asset("assets/images/doubt.svg");
+                  return Container();
                 }
               },
             ),
@@ -301,7 +296,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
                   onPressed: () async {
                     if (answer != "" && answer != null && answer.isNotEmpty) {
                       await _database.addAnswer(Answer(
-                          id: widget.query.id,
+                          questionid: widget.query.questionid,
                           admin: widget.admin.id,
                           admintype: widget.admin.type,
                           answer: answer));
@@ -327,22 +322,5 @@ class _AnswerScreenState extends State<AnswerScreen> {
             ),
           );
         });
-  }
-
-  initialize() async {
-    final ratingsdata = await _database.ratings;
-    setState(() {
-      ratings = ratingsdata;
-    });
-  }
-
-  double getrating(String id) {
-    double rating;
-    ratings.forEach((element) {
-      if (element.id == id) {
-        rating = element.rating;
-      }
-    });
-    return rating;
   }
 }

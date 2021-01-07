@@ -95,18 +95,18 @@ class EnterDetailScreen extends StatelessWidget {
                         text: "Submit",
                         press: () async {
                           if (_formkey.currentState.validate()) {
-                            await _database.addUserProfile(
-                              uid: _auth.getCurrentUser().uid,
-                              client: Client(
-                                name: name,
-                                number: contactNumber,
-                                address: address,
-                                emailid: emailId,
-                              ),
+                            final client = Client(
+                              name: name,
+                              number: contactNumber,
+                              address: address,
+                              emailid: emailId,
                             );
+                            await _database.addUserProfile(
+                                uid: _auth.getCurrentUser().uid,
+                                client: client);
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(builder: (context) {
-                              return ClientScreen();
+                              return ClientScreen(client: client);
                             }), (route) => false);
                           }
                         },

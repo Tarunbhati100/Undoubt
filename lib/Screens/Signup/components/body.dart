@@ -1,7 +1,9 @@
+import 'package:Undoubt/Screens/Client/Client_Screen.dart';
 import 'package:Undoubt/Screens/Login/components/background.dart';
 import 'package:Undoubt/Screens/Login/login_screen.dart';
 import 'package:Undoubt/Screens/Signup/EnterDetailScreen.dart';
 import 'package:Undoubt/Services/auth.dart';
+import 'package:Undoubt/Services/database.dart';
 import 'package:Undoubt/components/already_have_an_account_acheck.dart';
 import 'package:Undoubt/components/rounded_button.dart';
 import 'package:Undoubt/components/rounded_input_field.dart';
@@ -28,6 +30,9 @@ class _BodyState extends State<Body> {
   final _formKey = GlobalKey<FormState>();
 
   final _auth = AuthServices();
+
+  final _database = DatabaseServices();
+
   bool isloading = false;
 
   @override
@@ -100,12 +105,21 @@ class _BodyState extends State<Body> {
                                     emailid: email, password: password);
 
                             if (newUser != null) {
-                              await _auth.signInWithEmailAndPassword(
-                                  email, password);
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(builder: (context) {
-                                return EnterDetailScreen();
-                              }), (route) => false);
+                              final user = await _auth
+                                  .signInWithEmailAndPassword(email, password);
+                              final client =
+                                  await _database.clientData(user.uid);
+                              if (client == null) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(builder: (context) {
+                                  return EnterDetailScreen();
+                                }), (route) => false);
+                              } else {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(builder: (context) {
+                                  return ClientScreen(client: client);
+                                }), (route) => false);
+                              }
                             }
                           } catch (e) {
                             Flushbar(

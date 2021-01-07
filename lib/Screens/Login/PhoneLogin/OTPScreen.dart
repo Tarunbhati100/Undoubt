@@ -2,6 +2,7 @@ import 'package:Undoubt/Screens/Login/PhoneLogin/components/background.dart';
 import 'package:Undoubt/Screens/Client/Client_Screen.dart';
 import 'package:Undoubt/Screens/Login/PhoneLogin/components/wrapping_Container.dart';
 import 'package:Undoubt/Screens/Signup/EnterDetailScreen.dart';
+import 'package:Undoubt/Services/database.dart';
 import 'package:Undoubt/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class OTPScreen extends StatefulWidget {
 class _OTPScreenState extends State<OTPScreen> {
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
   String _verificationCode;
+  final _database = DatabaseServices();
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
   final BoxDecoration pinPutDecoration = BoxDecoration(
@@ -36,6 +38,7 @@ class _OTPScreenState extends State<OTPScreen> {
   @override
   void initState() {
     _verifyPhone();
+    super.initState();
   }
 
   @override
@@ -75,11 +78,19 @@ class _OTPScreenState extends State<OTPScreen> {
                             verificationId: _verificationCode, smsCode: pin))
                         .then((value) async {
                       if (value.user != null) {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EnterDetailScreen()),
-                            (route) => false);
+                        final client =
+                            await _database.clientData(value.user.uid);
+                        if (client == null) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) {
+                            return EnterDetailScreen();
+                          }), (route) => false);
+                        } else {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) {
+                            return ClientScreen(client: client);
+                          }), (route) => false);
+                        }
                       }
                     });
                   } catch (e) {
@@ -104,10 +115,18 @@ class _OTPScreenState extends State<OTPScreen> {
               .signInWithCredential(credential)
               .then((value) async {
             if (value.user != null) {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => ClientScreen()),
-                  (route) => false);
+              final client = await _database.clientData(value.user.uid);
+              if (client == null) {
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) {
+                  return EnterDetailScreen();
+                }), (route) => false);
+              } else {
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) {
+                  return ClientScreen(client: client);
+                }), (route) => false);
+              }
             }
           });
         },
