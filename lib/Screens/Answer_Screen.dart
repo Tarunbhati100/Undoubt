@@ -6,7 +6,6 @@ import 'package:Undoubt/models/admin.dart';
 import 'package:Undoubt/models/answer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class AnswerScreen extends StatefulWidget {
   Admin admin;

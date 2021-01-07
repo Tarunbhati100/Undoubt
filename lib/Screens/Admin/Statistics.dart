@@ -3,7 +3,6 @@ import 'package:Undoubt/Services/database.dart';
 import 'package:Undoubt/constants.dart';
 import 'package:Undoubt/models/admin.dart';
 import 'package:Undoubt/models/answer.dart';
-import 'package:Undoubt/models/rating.dart';
 import 'package:flutter/material.dart';
 
 class Statistics extends StatefulWidget {
