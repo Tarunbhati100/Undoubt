@@ -1,4 +1,3 @@
-import 'package:Undoubt/Screens/Client/Client_Screen.dart';
 import 'package:Undoubt/Screens/Login/components/background.dart';
 import 'package:Undoubt/Screens/Login/login_screen.dart';
 import 'package:Undoubt/Screens/Signup/EnterDetailScreen.dart';
@@ -30,8 +29,6 @@ class _BodyState extends State<Body> {
   final _formKey = GlobalKey<FormState>();
 
   final _auth = AuthServices();
-
-  final _database = DatabaseServices();
 
   bool isloading = false;
 
