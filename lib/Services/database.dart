@@ -116,12 +116,15 @@ class DatabaseServices {
 
   Future<Client> clientData(String uid) async {
     final doc = await clientsCollection.doc(uid).get();
-    return Client(
-      name: doc.data()['Name'],
-      emailid: doc.data()['EmailId'],
-      address: doc.data()['Address'],
-      number: doc.data()['Number'],
-    );
+    if (doc.exists)
+      return Client(
+        name: doc.data()['Name'],
+        emailid: doc.data()['EmailId'],
+        address: doc.data()['Address'],
+        number: doc.data()['Number'],
+      );
+    else
+      return null;
   }
 
   Future<List<Admin>> get admins async {

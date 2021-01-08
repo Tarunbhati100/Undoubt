@@ -99,27 +99,21 @@ class _BodyState extends State<Body> {
                       text: "SIGNUP",
                       press: () async {
                         if (_formKey.currentState.validate()) {
+                          setState(() {
+                            isloading = true;
+                          });
                           try {
                             final newUser =
                                 await _auth.registerWithEmailAndPassword(
                                     emailid: email, password: password);
 
                             if (newUser != null) {
-                              final user = await _auth
-                                  .signInWithEmailAndPassword(email, password);
-                              final client =
-                                  await _database.clientData(user.uid);
-                              if (client == null) {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(builder: (context) {
-                                  return EnterDetailScreen();
-                                }), (route) => false);
-                              } else {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(builder: (context) {
-                                  return ClientScreen(client: client);
-                                }), (route) => false);
-                              }
+                              await _auth.signInWithEmailAndPassword(
+                                  email, password);
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (context) {
+                                return EnterDetailScreen();
+                              }), (route) => false);
                             }
                           } catch (e) {
                             Flushbar(
